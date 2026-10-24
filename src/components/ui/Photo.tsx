@@ -31,7 +31,9 @@ export function Photo({
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
-        fetchPriority={priority ? 'high' : undefined}
+        /* React 18 warns on the camelCase `fetchPriority`; the lowercase
+           attribute is passed straight through and browsers honour it. */
+        {...(priority ? { fetchpriority: 'high' as const } : {})}
         style={focus ? { objectPosition: focus } : undefined}
       />
     </figure>
