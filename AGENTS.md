@@ -45,6 +45,14 @@ docker compose -f docker-compose.base44.yml up -d
     rotates.
 - The dev server binds `0.0.0.0:3000` with `strictPort`.
 
+## Design tokens
+
+`src/styles/tokens.css` is the single source for the palette (moss / cream /
+sage), the radius scale and the type steps. Display type uses `--font-display`
+(Fraunces, loaded in `index.html`); running text uses Newsreader, UI text Inter.
+The home page is laid out around large radii and photographic panels — keep new
+sections on the same scale rather than introducing new greys or sharper corners.
+
 ## Verifying
 
 ```bash
@@ -68,8 +76,16 @@ A production bundle served on port 3000 means the edit loop is broken.
 - Practitioner records are `profileStatus: 'placeholder'` with no names.
 - Clinic contact details are `null` and `contactVerified: false`; the UI states
   that they are missing rather than showing invented ones.
-- Imagery is abstract CSS/SVG artwork (`ArtPanel`), labelled as development
-  imagery. There is no licensed clinic photography yet.
+- Photography lives in `public/media/` and is wired through
+  `src/content/media.ts` → `<Photo>` (`src/components/ui/Photo.tsx`), which applies
+  one shared grade to every image. The files are openly licensed stock photographs
+  (Pexels / Unsplash, logged in `public/media/CREDITS.md`), used as development
+  imagery — never photography of this clinic, its team or its patients. Treatment
+  and article cards map their `art` tone to a photo via `tonePhotos`; team cards
+  use treatment scenes (`practitionerPhotos`) rather than stock faces, so no model
+  is presented as a named clinician. Replace the files, keep the names.
+- `ArtPanel` still exists as a CSS/SVG surface but is no longer used on the home
+  page; the home hero is `src/components/home/*` styled in `src/styles/home.css`.
 - `src/content/stories.ts` is empty on purpose; `PatientStories` renders nothing.
 
 ## Tests

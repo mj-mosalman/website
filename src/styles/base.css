@@ -75,6 +75,7 @@ textarea {
 .site-footer :focus-visible,
 .section--espresso :focus-visible,
 .hero :focus-visible,
+.hhero :focus-visible,
 .site-header--overlay :focus-visible,
 .mobile-nav :focus-visible {
   outline-color: var(--champagne-soft);

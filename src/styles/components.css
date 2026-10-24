@@ -237,7 +237,7 @@
 }
 
 .btn--primary:hover {
-  background: #3a3230;
+  background: var(--espresso-soft);
 }
 
 .btn--light {
@@ -314,6 +314,46 @@
 .section--espresso .arrow-link:hover,
 .site-footer .arrow-link:hover {
   color: var(--on-dark);
+}
+
+/* ---------- Photography ---------- */
+.photo {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--taupe);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* One grade across every photograph: a touch less saturation, slightly deeper
+     contrast, so stock imagery reads as a single commissioned library. */
+  filter: saturate(0.93) contrast(1.04) brightness(1.01);
+  transition: transform 640ms var(--ease);
+}
+
+.photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(200deg, rgba(38, 44, 36, 0.12), transparent 55%);
+  mix-blend-mode: multiply;
+}
+
+a:hover > .photo img,
+a:focus-visible > .photo img {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo img {
+    transition: none;
+  }
 }
 
 /* ---------- Art panels ---------- */
@@ -640,21 +680,26 @@
     linear-gradient(150deg, #e6ded2, #c9bcac);
 }
 
-.specialist-card__mark {
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(255, 253, 249, 0.75);
-  border-radius: 50%;
+.specialist-card__portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.93) contrast(1.04);
 }
 
 .specialist-card__note {
   position: absolute;
-  left: 1rem;
-  bottom: 0.9rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.16em;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(251, 250, 246, 0.9);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(44, 38, 34, 0.62);
+  color: rgba(34, 39, 31, 0.7);
 }
 
 .specialist-card__body {

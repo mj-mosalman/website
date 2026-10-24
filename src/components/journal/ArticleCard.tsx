@@ -1,12 +1,13 @@
 import { Link } from '../../router/Router'
 import { formatDate, type Article } from '../../content/articles'
-import { ArtPanel } from '../ui/ArtPanel'
+import { tonePhotos } from '../../content/media'
+import { Photo } from '../ui/Photo'
 
 export function ArticleCard({ article }: { article: Article }) {
   return (
     <article className="article-card">
       <Link to={`/journal/${article.slug}`} className="article-card__media" tabIndex={-1} aria-hidden="true">
-        <ArtPanel tone={article.art} alt="" ratio="16/9" motif="column" />
+        <Photo src={tonePhotos[article.art]} alt="" ratio="16/9" />
       </Link>
       <p className="article-card__meta">
         <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>

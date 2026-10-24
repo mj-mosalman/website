@@ -1,6 +1,7 @@
 import { Link } from '../../router/Router'
 import type { Treatment } from '../../content/treatments'
-import { ArtPanel } from '../ui/ArtPanel'
+import { tonePhotos } from '../../content/media'
+import { Photo } from '../ui/Photo'
 
 export function TreatmentCard({ treatment }: { treatment: Treatment }) {
   return (
@@ -11,7 +12,7 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
         tabIndex={-1}
         aria-hidden="true"
       >
-        <ArtPanel tone={treatment.image} alt="" ratio="4/5" motif="arch" />
+        <Photo src={tonePhotos[treatment.image]} alt="" ratio="4/5" />
       </Link>
       <div className="treatment-card__body">
         <p className="label">{treatment.category}</p>

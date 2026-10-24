@@ -1,14 +1,16 @@
 import type { Practitioner } from '../../content/practitioners'
+import { photos, practitionerPhotos } from '../../content/media'
 
 export function SpecialistCard({ practitioner }: { practitioner: Practitioner }) {
   const verified = practitioner.profileStatus === 'verified'
+  const portrait = practitionerPhotos[practitioner.slug] ?? photos.practitioner.src
 
   return (
     <article className="specialist-card">
       <div className="specialist-card__portrait" aria-hidden="true">
-        <span className="specialist-card__mark" />
+        <img src={portrait} alt="" loading="lazy" decoding="async" />
         <span className="specialist-card__note">
-          {verified ? 'Portrait' : 'Portrait pending'}
+          {verified ? 'Portrait' : 'Development image'}
         </span>
       </div>
       <div className="specialist-card__body">
