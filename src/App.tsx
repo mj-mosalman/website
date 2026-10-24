@@ -1,43 +1,48 @@
-const highlights = [
-  {
-    title: 'React + TypeScript',
-    body: 'Typed components with strict compiler settings, ready for real features.',
-  },
-  {
-    title: 'Vite dev server',
-    body: 'Hot reload runs on port 3000, so edits show up in the preview instantly.',
-  },
-  {
-    title: 'Docker Compose ready',
-    body: 'One command starts everything; dependencies install on boot from the lockfile.',
-  },
-]
+import { RouterProvider, normalizePath, useRouter } from './router/Router'
+import { Layout } from './components/layout/Layout'
+import { HomePage } from './pages/HomePage'
+import { TreatmentsPage } from './pages/TreatmentsPage'
+import { TreatmentRoute } from './pages/TreatmentDetailPage'
+import { PhilosophyPage } from './pages/PhilosophyPage'
+import { SpecialistsPage } from './pages/SpecialistsPage'
+import { JournalPage } from './pages/JournalPage'
+import { ArticleRoute } from './pages/ArticlePage'
+import { ConsultationPage } from './pages/ConsultationPage'
+import { ContactPage } from './pages/ContactPage'
+import { PrivacyPage } from './pages/PrivacyPage'
+import { TermsPage } from './pages/TermsPage'
+import { AccessibilityPage } from './pages/AccessibilityPage'
+import { NotFoundPage } from './pages/NotFoundPage'
+
+function Routes() {
+  const { pathname } = useRouter()
+  const path = normalizePath(pathname)
+
+  if (path === '/') return <HomePage />
+  if (path === '/treatments') return <TreatmentsPage />
+  if (path.startsWith('/treatments/')) {
+    return <TreatmentRoute slug={decodeURIComponent(path.slice('/treatments/'.length))} />
+  }
+  if (path === '/philosophy') return <PhilosophyPage />
+  if (path === '/specialists') return <SpecialistsPage />
+  if (path === '/journal') return <JournalPage />
+  if (path.startsWith('/journal/')) {
+    return <ArticleRoute slug={decodeURIComponent(path.slice('/journal/'.length))} />
+  }
+  if (path === '/consultation') return <ConsultationPage />
+  if (path === '/contact') return <ContactPage />
+  if (path === '/privacy') return <PrivacyPage />
+  if (path === '/terms') return <TermsPage />
+  if (path === '/accessibility') return <AccessibilityPage />
+  return <NotFoundPage />
+}
 
 export default function App() {
   return (
-    <main className="page">
-      <div className="card">
-        <p className="eyebrow">New project</p>
-        <h1>Your website starts here</h1>
-        <p className="lede">
-          This is a clean starting point. Edit <code>src/App.tsx</code> and the
-          preview updates as you type.
-        </p>
-
-        <ul className="highlights">
-          {highlights.map((item) => (
-            <li key={item.title}>
-              <h2>{item.title}</h2>
-              <p>{item.body}</p>
-            </li>
-          ))}
-        </ul>
-
-        <p className="footnote">
-          Run <code>npm run build</code> to type-check and produce a production
-          bundle.
-        </p>
-      </div>
-    </main>
+    <RouterProvider>
+      <Layout>
+        <Routes />
+      </Layout>
+    </RouterProvider>
   )
 }

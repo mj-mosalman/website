@@ -2,44 +2,75 @@
 
 Project-specific notes that are not obvious from the manifests.
 
+## What this is
+
+Aurelia Aesthetic Clinic — a React + TypeScript + Vite site with a small Node
+consultation-request service. No framework beyond React; routing is a ~100-line
+history-API router in `src/router/Router.tsx`.
+
 ## Running it
 
 ```bash
 docker compose -f docker-compose.base44.yml up -d
 ```
 
-The app is served on host port 3000 by the Vite dev server (React + TypeScript).
-`docker compose logs -f web` shows live compilation.
+- `web` — Vite dev server on host port 3000 (the preview entry point).
+- `api` — `node server/index.mjs` on the internal network only, reached through
+  the Vite dev proxy at `/api` (single origin, so no CORS and no cookie issues).
+
+`docker compose logs -f web` / `-f api` show live output.
 
 ## Non-obvious setup
 
-- **`node_modules` is a named Docker volume** (`website_node_modules` or similar),
-  not a directory in the repo. The source is bind-mounted over `/app`, so anything
-  installed at image build time would be hidden; instead the container runs
-  `npm install` on every start before `exec npm run dev`. Changing `package.json`
-  is therefore picked up by a container restart, no rebuild needed.
-- `package-lock.json` is committed. Regenerate it in a container, not on the host:
+- **`node_modules` is a named Docker volume**, not a repo directory. The source is
+  bind-mounted over `/app`, so installs happen at container start
+  (`npm install` then `exec npm run dev`). `package-lock.json` is committed;
+  regenerate it in a container:
   `docker run --rm -v "$PWD":/app -w /app node:22-alpine npm install --package-lock-only`
-- **Sandbox preview overrides** (`vite.config.ts`, gated on
-  `BASE44_PREVIEW_MODE === "1"`, unchanged otherwise):
+- **The API has zero dependencies** (Node built-in `http`), so the `api` service
+  never needs an install and starts instantly.
+- **Consultation requests are appended to `/data/consultations.jsonl`** inside the
+  `consultations` named volume (mode 0600). This is a development-grade store: it
+  is not encrypted, has no retention policy, and is not transmitted anywhere. A
+  production inbox needs a real store plus access control.
+- **No email is sent.** A successful submission returns a reference and stores the
+  request; the success copy says exactly that and never claims a confirmation
+  email or a booked appointment.
+- Sandbox preview overrides (gated on `BASE44_PREVIEW_MODE === "1"`, unchanged
+  otherwise) in `vite.config.ts`:
   - `server.watch.usePolling` — bind-mounted files do not always emit inotify
-    events in the sandbox, so hot reload needs polling.
+    events in the sandbox.
   - `server.allowedHosts` gains `.${BASE44_SANDBOX_HOST_DOMAIN}` — the preview
-    proxy forwards `<port>-<sandbox id>.<domain>` as the Host header, and the
-    sandbox id rotates, so the wildcard is required. The platform also passes
-    `__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS`, which Vite 6.1+ appends itself.
-- The dev server binds `0.0.0.0:3000` (`strictPort`) so the proxy can reach it.
+    proxy forwards `<port>-<sandbox id>.<domain>` as Host, and the sandbox id
+    rotates.
+- The dev server binds `0.0.0.0:3000` with `strictPort`.
 
 ## Verifying
 
 ```bash
-curl -s http://localhost:3000/ | head -20      # should include /@vite/client
-curl -s http://localhost:3000/src/main.tsx     # live source, not a bundle
-docker compose -f docker-compose.base44.yml ps # web should be "healthy"
+curl -s http://localhost:3000/ | grep -c '@vite/client'   # live dev server
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/src/main.tsx
+curl -s http://localhost:3000/api/health                  # {"status":"ok"}
+curl -s -X POST http://localhost:3000/api/consultations \
+  -H 'Content-Type: application/json' \
+  -d '{"requestId":"verify-0001","fullName":"Test Person","email":"test@example.com","contactMethod":"email","privacyAccepted":true}'
+docker compose -f docker-compose.base44.yml exec -T api sh -c 'wc -l < /data/consultations.jsonl'
 ```
 
-A production bundle served on port 3000 means the edit loop is broken — the dev
-server must serve unhashed source modules.
+A production bundle served on port 3000 means the edit loop is broken.
+
+## Content and honesty rules
+
+- `src/content/*` is the single source of truth. Treatment copy is deliberately
+  free of prices, durations, outcome claims and recovery timelines: none are
+  verified. `medicalReviewStatus` is `pending-review` everywhere and
+  `medicallyReviewedBy` / `lastReviewedAt` are `null` — do not invent reviewers.
+- Practitioner records are `profileStatus: 'placeholder'` with no names.
+- Clinic contact details are `null` and `contactVerified: false`; the UI states
+  that they are missing rather than showing invented ones.
+- Imagery is abstract CSS/SVG artwork (`ArtPanel`), labelled as development
+  imagery. There is no licensed clinic photography yet.
+- `src/content/stories.ts` is empty on purpose; `PatientStories` renders nothing.
 
 ## Tests
 

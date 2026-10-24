@@ -18,5 +18,13 @@ export default defineConfig({
     },
     allowedHosts:
       previewMode && sandboxHostDomain ? [`.${sandboxHostDomain}`] : undefined,
+    // Single origin: the browser only ever talks to port 3000, and /api is
+    // forwarded to the consultation service.
+    proxy: {
+      '/api': {
+        target: process.env.API_URL ?? 'http://127.0.0.1:8787',
+        changeOrigin: true,
+      },
+    },
   },
 })

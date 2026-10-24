@@ -1,0 +1,5 @@
+# Preview environment: keep the site out of search indexes.
+# Replace this file with an indexable robots.txt (and add a sitemap) once the
+# production domain and launch approval exist.
+User-agent: *
+Disallow: /

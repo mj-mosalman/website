@@ -1,0 +1,52 @@
+:root {
+  /* Palette */
+  --espresso: #26211f;
+  --espresso-soft: #322b28;
+  --espresso-line: #453b36;
+  --ivory: #f8f5ef;
+  --porcelain: #fffdf9;
+  --taupe: #eae2d8;
+  --champagne: #b59a73;
+  --champagne-soft: #c8b294;
+  --champagne-ink: #7d6544;
+  --ink: #2c2622;
+  --muted: #6f665f;
+  --on-dark: #f4efe6;
+  --on-dark-muted: #bcb0a3;
+  --line: rgba(44, 38, 34, 0.14);
+  --line-strong: rgba(44, 38, 34, 0.26);
+  --line-dark: rgba(244, 239, 230, 0.18);
+  --focus: #7d6544;
+  --danger: #8c3a2e;
+
+  /* Typography */
+  --font-serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --step-hero: clamp(2.7rem, 6vw, 4.9rem);
+  --step-h1: clamp(2.35rem, 4.6vw, 3.9rem);
+  --step-h2: clamp(1.85rem, 3.4vw, 2.9rem);
+  --step-h3: clamp(1.05rem, 1.4vw, 1.2rem);
+  --step-lede: clamp(1.025rem, 1.25vw, 1.15rem);
+
+  /* Layout */
+  --header-h: 74px;
+  --gutter: clamp(1.25rem, 4vw, 3.25rem);
+  --max: 1220px;
+  --max-wide: 1380px;
+  --max-prose: 68ch;
+  --section-y: clamp(4rem, 8.5vw, 7.5rem);
+
+  /* Surfaces and motion */
+  --radius: 3px;
+  --radius-lg: 6px;
+  --ease: cubic-bezier(0.22, 0.61, 0.24, 1);
+  --dur: 320ms;
+  --shadow-soft: 0 28px 70px -46px rgba(38, 33, 31, 0.55);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --header-h: 64px;
+  }
+}

@@ -1,4 +1,27 @@
 services:
+  api:
+    image: node:22-alpine
+    working_dir: /app
+    command: ["node", "server/index.mjs"]
+    environment:
+      - API_PORT=8787
+      - DATA_DIR=/data
+    volumes:
+      - ./:/app
+      # Consultation requests are written here. A named volume keeps them across
+      # container restarts; it is not part of the repository.
+      - consultations:/data
+    labels:
+      base44.project: website
+      base44.kind: api
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8787/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: on-failure
+
   web:
     image: node:22-alpine
     working_dir: /app
@@ -11,11 +34,16 @@ services:
       - BASE44_PREVIEW_MODE
       - BASE44_SANDBOX_HOST_DOMAIN
       - CHOKIDAR_USEPOLLING=1
+      # The dev server proxies /api to the consultation service (single origin).
+      - API_URL=http://api:8787
     volumes:
       - ./:/app
       # Dependencies live in a named volume so bind-mounting the source from the
       # sandbox does not hide them; they are installed on startup from package.json.
       - node_modules:/app/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
     labels:
       base44.project: website
       base44.kind: web
@@ -30,3 +58,4 @@ services:
 
 volumes:
   node_modules:
+  consultations:
